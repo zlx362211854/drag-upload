@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    #test {
+      width: 200px;
+      height: 200px;
+      background-color: aqua;
+      text-align: center;
+      line-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div>
+    <div id='test'>Drag the file here</div>
+  </div>
+  <script>
+
+    document.addEventListener('drop', function (e) {
+      e.preventDefault()
+    }, false)
+    document.addEventListener('dragover', function (e) {
+      e.preventDefault()
+    }, false)
+    var dom = document.getElementById('test');
+    dom.setAttribute('draggable', 'true');
+
+    dom.addEventListener('drop', function (event) {
+        console.log('drop: ' + event.dataTransfer);   
+        var files = event.dataTransfer.files || [];  
+        if (files[0]) {
+          upload(files[0], dom)
+        }
+    });
+    var upload = function(file, dom) {
+      var formData = new FormData();
+      formData.append('file', file);
+      // ajax上传
+      var xhr = null;
+      if (window.XMLHttpRequest){
+        xhr=new XMLHttpRequest();
+      }else{
+        xhr=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      // 上传结束 
+      xhr.onload = function () {
+      　　var result = JSON.parse(xhr.responseText);
+        if (result.code === 1000) {
+          alert('上传成功')
+          dom.innerText = file.name
+        }
+      };
+      xhr.open('POST', 'http://localhost:3050/file/uploadAvatar', true); 
+      xhr.send(formData);
+    }
+  </script>
+</body>
+</html>
